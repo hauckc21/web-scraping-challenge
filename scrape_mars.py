@@ -3,10 +3,11 @@ import time
 from splinter import Browser
 from bs4 import BeautifulSoup as bs
 import requests
+import pymongo
 
 def init_browser():
     executable_path = {'executable_path': 'c:/bin/chromedriver'}
-    browser = Browser('chrome', **executable_path, headless=False)
+    return Browser('chrome', **executable_path, headless=False)
 
 
 def scrape():
@@ -88,7 +89,7 @@ def scrape():
         image_dict['title'] = title
         image_dict['img_url'] = image_url
         
-        hemisphere_image_urls.append(image_dict))
+        hemisphere_image_urls.append(image_dict)
 
 
     #create mars dictionary
