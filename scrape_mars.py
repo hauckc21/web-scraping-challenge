@@ -49,31 +49,34 @@ def scrape():
 
 
     
-    #Mars Hemispheres
-    spheres_url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
-    browser.visit(spheres_url)
-    #wait for page to load
-    time.sleep(2)
-    spheres_html = browser.html
-    spheres_soup = bs(spheres_html, 'html.parser')
+    # Mars hemispheres to be scraped
+    usgs_url = 'https://astrogeology.usgs.gov'
+    hemispheres_url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
 
-    all_spheres = spheres_soup.find('div', class_='collapsible results')
-    mars_spheres = all_spheres.find_all('div', class_='item')
+    browser.visit(hemispheres_url)
 
-    sphere_image_urls = []
+    hemispheres_html = browser.html
 
-    #Iterate through each hemisphere data
-    for sphere in mars_spheres:
+    hemispheres_soup = bs(hemispheres_html, 'html.parser')
+
+    #Mars hemisphere data
+    all_mars_hemispheres = hemispheres_soup.find('div', class_='collapsible results')
+    mars_hemispheres = all_mars_hemispheres.find_all('div', class_='item')
+
+    hemisphere_image_urls = []
+
+    # Iterate through each hemisphere
+    for sphere in mars_hemispheres:
+        
         # Collect Title
         hemisphere = sphere.find('div', class_="description")
         title = hemisphere.h3.text
         
-        # Collect image link by browsing to hemisphere page
+        # Collect image link by browsing to page
         hemisphere_link = hemisphere.a["href"]    
-        browser.visit(spheres_url + hemisphere_link)
+        browser.visit(usgs_url + hemisphere_link)
         
         time.sleep(2)
-        
         image_html = browser.html
         image_soup = bs(image_html, 'html.parser')
         
@@ -85,7 +88,7 @@ def scrape():
         image_dict['title'] = title
         image_dict['img_url'] = image_url
         
-        hemisphere_image_urls.append(image_dict)
+        hemisphere_image_urls.append(image_dict))
 
 
     #create mars dictionary
@@ -93,8 +96,11 @@ def scrape():
         "news_title": news_title,
         "news_p": news_p,
         "featured_image_url": featured_image_url,
-        "facts_df": str(facts_html),
-        "hemisphere_images": sphere_images_url
+        "fact_table": str(facts_html),
+        "hemisphere_images": hemisphere_image_urls
     }
 
+    #close browser session
+    browser.quit()
+    
     return mars_dict
